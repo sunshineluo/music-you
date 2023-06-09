@@ -1,8 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/api/",
-      "destination": "https://autumnfish.cn/"
+      "source": "/api/:match*",
+      "destination": "https://autumnfish.cn/:match*"
     }
   ]
 }
