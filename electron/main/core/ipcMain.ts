@@ -1,6 +1,6 @@
 import { app, ipcMain, shell } from 'electron'
 
-import { WindowState } from '../../../src/util/enum'
+import { WindowState } from '../../../shared/types'
 import { downloadFile, downloadTrack } from './util/download'
 import log from './util/log'
 import store from './util/store'
@@ -93,6 +93,32 @@ export const registerIpcMain = (windowManager: WindowManager) => {
       window.setSize(width, height, true)
     } else {
       window.setSize(WindowDefaultSize.width, WindowDefaultSize.height, true)
+    }
+  })
+  ipcMain.handle('setSize', (e, payload) => {
+    const { width, height } = payload
+    if (width && height) {
+      window.setSize(width, height, true)
+    }
+  })
+  ipcMain.handle('minimal', (e, open) => {
+    log.info('[main] minimal player')
+    if (open) {
+      store.set('minimal', true)
+      store.set('windowPosition', window.getPosition())
+      window.setSize(256, 144, true)
+    } else {
+      store.set('minimal', false)
+      try {
+        const { height, width } = store.get('windowSize')
+        const position = store.get('windowPosition')
+        if (position) {
+          window.setPosition(position[0], position[1])
+        }
+        window.setSize(width, height, true)
+      } catch (e) {
+        log.error('[main] close minimal error')
+      }
     }
   })
   ipcMain.handle('setProgress', (e, progress) => {

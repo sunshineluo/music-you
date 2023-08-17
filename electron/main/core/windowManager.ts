@@ -1,11 +1,11 @@
 import type { BrowserWindowConstructorOptions } from 'electron'
-import { app, BrowserWindow, shell } from 'electron'
+import { BrowserWindow, shell } from 'electron'
 import is from 'electron-is'
 import type Store from 'electron-store'
 import { EventEmitter } from 'events'
 import { join } from 'path'
 
-import { WindowState } from '../../../src/util/enum'
+import { WindowState } from '../../../shared/types'
 import type { Pages } from './config/page'
 import pages from './config/page'
 import log from './util/log'
@@ -129,9 +129,18 @@ export default class WindowManager extends EventEmitter {
         window?.webContents.send('windowState', WindowState.NORMAL)
       })
       window?.on('resized', () => {
-        log.info('[main]: window resize')
+        const minimal = store.get('minimal')
         const [width, height] = window.getSize() ?? []
-        this.store.set('windowSize', { width, height })
+
+        log.info(`[main]: window resize height: ${height} width: ${width}`)
+
+        if (!minimal) {
+          log.info(`[main]: store window size`)
+          this.store.set('windowSize', { width, height })
+        }
+      })
+      window?.on('moved', (e) => {
+        log.info(`[main]: window moved`)
       })
 
       // Test active push message to Renderer-process
