@@ -3,14 +3,19 @@
     <AppCC />
     <app-nav v-if="smAndUp && navPosition === NavPosition.left" class="v-player-nav" />
     <app-header v-if="!inDeepPage && navPosition === NavPosition.top" class="v-player-header" />
-
+    <v-app-bar v-if="!inDeepPage && navPosition === NavPosition.left" height="20" flat></v-app-bar>
     <app-content id="v-player-content" class="v-player-content" />
+    <v-app-bar v-if="miniPlayer" height="4" flat location="bottom"></v-app-bar>
+
     <app-playbar v-if="smAndUp && !miniPlayer" />
     <app-mobile-playbar v-if="xs" />
     <app-bottom-nav v-if="xs" />
     <app-login />
     <app-playing-page />
     <window-control v-if="isShowWindowControl" />
+    <transition name="slide-fade-y">
+      <mini-player-bar v-if="miniPlayer" />
+    </transition>
   </v-app>
 </template>
 
@@ -20,6 +25,7 @@ import { useDisplay, useTheme } from 'vuetify'
 
 import useInForeground from '@/hooks/useInForeground'
 import { useCurrentTheme } from '@/hooks/useTheme'
+import MiniPlayerBar from '@/pages/layout/MiniPlayerBar.vue'
 import { NavPosition, useSettingStore } from '@/store/setting'
 import is from '@/util/is'
 
@@ -99,5 +105,8 @@ $transition-time: 350ms;
   overflow-y: hidden;
   overflow-x: hidden;
   //width: 100vw;
+  .v-application__wrap {
+    min-height: initial !important;
+  }
 }
 </style>

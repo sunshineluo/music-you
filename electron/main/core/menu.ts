@@ -1,12 +1,11 @@
 import type { BrowserWindow } from 'electron'
+import { app, Menu, shell } from 'electron'
 import is from 'electron-is'
 
 import { name } from '../../../package.json'
-
-const { app, Menu, shell } = require('electron')
 const isMac = process.platform === 'darwin'
 export const createElectronMenu = (window: BrowserWindow) => {
-  const template = [
+  const template: any = [
     ...(is.macOS()
       ? [
           {
@@ -18,19 +17,39 @@ export const createElectronMenu = (window: BrowserWindow) => {
                 label: '设置',
                 accelerator: (() => (isMac ? 'CmdOrCtrl+,' : 'Ctrl+,'))(),
                 click: () => {
-                  window.webContents.send('open-settings')
+                  window.webContents.send('open-route', 'setting')
                 },
               },
               { type: 'separator' },
-              { role: 'hide' },
-              { role: 'hideothers' },
-              { role: 'unhide' },
+              { role: 'hide', label: `隐藏${name}` },
+              { role: 'hideothers', label: '隐藏其他应用' },
+              { role: 'unhide', label: '显示全部' },
               { type: 'separator' },
-              { role: 'quit' },
+              { role: 'quit', label: `退出${name}` },
             ],
           },
         ]
       : []),
+    {
+      label: '编辑',
+      submenu: [
+        { role: 'undo', label: '撤销' },
+        { role: 'redo', label: '重做' },
+        { type: 'separator' },
+        { role: 'cut', label: '剪切' },
+        { role: 'copy', label: '复制' },
+        { role: 'paste', label: '粘贴' },
+        { role: 'delete', label: '删除' },
+        { role: 'selectAll', label: '全选' },
+        {
+          label: '搜索',
+          accelerator: 'CmdOrCtrl+F',
+          click: () => {
+            window.webContents.send('open-route', 'search')
+          },
+        },
+      ],
+    },
     {
       label: '播放',
       submenu: [
@@ -86,11 +105,11 @@ export const createElectronMenu = (window: BrowserWindow) => {
       ],
     },
     {
-      label: 'Window',
+      label: '窗口',
       submenu: [
-        { role: 'close' },
-        { role: 'minimize' },
-        { role: 'zoom' },
+        { role: 'close', label: '关闭' },
+        { role: 'minimize', label: '最小化' },
+        { role: 'zoom', label: '缩放' },
         { type: 'separator' },
         {
           label: '后退',
@@ -106,11 +125,10 @@ export const createElectronMenu = (window: BrowserWindow) => {
             window.webContents.goForward()
           },
         },
-        { role: 'reload' },
-        { role: 'forcereload' },
+        { role: 'reload', label: '刷新' },
+        { role: 'forcereload', label: '强制刷新' },
         { type: 'separator' },
-        { role: 'togglefullscreen' },
-        { role: 'close' },
+        { role: 'togglefullscreen', label: '切换全屏' },
       ],
     },
     {
@@ -159,5 +177,5 @@ export const createElectronMenu = (window: BrowserWindow) => {
       ],
     },
   ]
-  Menu.setApplicationMenu(Menu.buildFromTemplate(template))
+  Menu.setApplicationMenu(Menu.buildFromTemplate(<any>template))
 }
